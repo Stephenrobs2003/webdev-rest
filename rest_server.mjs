@@ -56,40 +56,81 @@ function dbRun(query, params) {
 /********************************************************************
  ***   REST REQUEST HANDLERS                                      *** 
  ********************************************************************/
+
 // GET request handler for crime codes
-app.get('/codes', (req, res) => {
-    console.log(req.query); // query object (key-value pairs after the ? in the url)
-    
-    res.status(200).type('json').send({}); // <-- you will need to change this
+app.get('/codes', async (req, res) => {
+    try {
+        const query = 'SELECT * FROM Codes';
+        const codes = await dbSelect(query, []);
+
+        res.status(200).type('json').send({ codes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // GET request handler for neighborhoods
-app.get('/neighborhoods', (req, res) => {
-    console.log(req.query); // query object (key-value pairs after the ? in the url)
-    
-    res.status(200).type('json').send({}); // <-- you will need to change this
+app.get('/neighborhoods', async (req, res) => {
+    try {
+        const query = 'SELECT * FROM Neighborhoods';
+        const neighborhoods = await dbSelect(query, []);
+
+        res.status(200).type('json').send({ neighborhoods });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // GET request handler for crime incidents
-app.get('/incidents', (req, res) => {
-    console.log(req.query); // query object (key-value pairs after the ? in the url)
-    
-    res.status(200).type('json').send({}); // <-- you will need to change this
+app.get('/incidents', async (req, res) => {
+    try {
+        const query = 'SELECT * FROM Incidents';
+        const incidents = await dbSelect(query, []);
+
+        res.status(200).type('json').send({ incidents });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // PUT request handler for new crime incident
-app.put('/new-incident', (req, res) => {
-    console.log(req.body); // uploaded data
-    
-    res.status(200).type('txt').send('OK'); // <-- you may need to change this
+app.put('/new-incident', async (req, res) => {
+    try {
+        // Assuming req.body contains the data for the new incident
+        const { case_number, date_time, code, incident, police_grid, neighborhood_number, block } = req.body;
+
+        const query = `
+            INSERT INTO Incidents (case_number, date_time, code, incident, police_grid, neighborhood_number, block)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        await dbRun(query, [case_number, date_time, code, incident, police_grid, neighborhood_number, block]);
+
+        res.status(200).type('txt').send('OK');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // DELETE request handler for new crime incident
-app.delete('/remove-incident', (req, res) => {
-    console.log(req.body); // uploaded data
-    
-    res.status(200).type('txt').send('OK'); // <-- you may need to change this
+app.delete('/remove-incident', async (req, res) => {
+    try {
+        // Assuming req.body contains the data for the incident to be removed
+        const { case_number } = req.body;
+
+        const query = 'DELETE FROM Incidents WHERE case_number = ?';
+        await dbRun(query, [case_number]);
+
+        res.status(200).type('txt').send('OK');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
 });
+
 
 /********************************************************************
  ***   START SERVER                                               *** 
