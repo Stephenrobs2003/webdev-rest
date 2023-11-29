@@ -6,7 +6,7 @@
         "name": "",
         "email": ""
     },
-    "contributors": ["Henry Arlt"],
+    "contributors": ["Henry Arlt"],["Stephen Robert"],["Noah Kruse"]
     "repository": {},
     "dependencies": {
         "express": "^4.18.2",
