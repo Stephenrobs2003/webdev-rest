@@ -60,7 +60,14 @@ function dbRun(query, params) {
 // GET request handler for crime codes
 app.get('/codes', async (req, res) => {
     try {
-        const query = 'SELECT * FROM Codes';
+        let query = 'SELECT * FROM Codes'; 
+        if (req.query.code.length > 0) {
+            let reqbody = req.query.code.split(','); // splits req params into array of codes instead of one string
+            query += ' WHERE code = ' + reqbody[0] // adds initial where clause
+            for (let i = 1; i < reqbody.length; i++){ // iterates over reqbody array and adds query for each code
+                query += ' OR code = ' + reqbody[i];
+            }
+        }
         const codes = await dbSelect(query, []);
 
         res.status(200).type('json').send({ codes });
@@ -73,7 +80,14 @@ app.get('/codes', async (req, res) => {
 // GET request handler for neighborhoods
 app.get('/neighborhoods', async (req, res) => {
     try {
-        const query = 'SELECT * FROM Neighborhoods';
+        let query = 'SELECT * FROM Neighborhoods';
+        if (req.query.id.length > 0){
+            let reqbody = req.query.id.split(',')
+            query += ' WHERE neighborhood_number = ' + reqbody[0];
+            for (let i = 1; i < reqbody.length; i++ ){
+                query += ' OR neighborhood_number = ' + reqbody[i];
+            }
+        }
         const neighborhoods = await dbSelect(query, []);
 
         res.status(200).type('json').send({ neighborhoods });
@@ -86,9 +100,59 @@ app.get('/neighborhoods', async (req, res) => {
 // GET request handler for crime incidents
 app.get('/incidents', async (req, res) => {
     try {
-        const query = 'SELECT * FROM Incidents';
-        const incidents = await dbSelect(query, []);
+        let limit,start_date,end_date,grid,neighborhood;
+        if (req.query.limit.length > 0) {
+            limit = req.query.limit
+        } else {
+            limit = 1000
+        }
 
+        if (req.query.start_date.length > 0) {
+            start_date = req.query.start_date
+        } else {
+            start_date = '0000-00-00'
+        }
+
+        if (req.query.end_date.length > 0) {
+            end_date = req.query.end_date
+        } else {
+            let date = new Date()
+            let day = date.getDay()
+            let month = date.getMonth()
+            let year = date.getFullYear()
+            end_date = year + "-" + month + "-" + day
+        }
+
+        let query = 'SELECT * FROM Incidents';
+        query += " WHERE date_time BETWEEN '" + start_date + "' and '" + end_date + "'"
+        if (req.query.code.length > 0) {
+            let reqbody = req.query.code.split(',');
+            query += ' AND (code = ' + reqbody[0] 
+            for (let i = 1; i < reqbody.length; i++){ 
+                query += ' OR code = ' + reqbody[i];
+            }
+            query += ")"
+        }
+
+        if (req.query.grid.length > 0) {
+            let reqbody = req.query.grid.split(',');
+            query += ' AND (police_grid = ' + reqbody[0] 
+            for (let i = 1; i < reqbody.length; i++){ 
+                query += ' OR police_grid = ' + reqbody[i];
+            }
+            query += ")"
+        }
+
+        if (req.query.neighborhood.length > 0) {
+            let reqbody = req.query.neighborhood.split(',');
+            query += ' AND (neighborhood_number = ' + reqbody[0] 
+            for (let i = 1; i < reqbody.length; i++){ 
+                query += ' OR neighborhood_number = ' + reqbody[i];
+            }
+            query += ")"
+        }
+        query += ' LIMIT ' + limit
+        const incidents = await dbSelect(query, []);
         res.status(200).type('json').send({ incidents });
     } catch (error) {
         console.error(error);
@@ -107,6 +171,7 @@ app.put('/new-incident', async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
         await dbRun(query, [case_number, date_time, code, incident, police_grid, neighborhood_number, block]);
+        
 
         res.status(200).type('txt').send('OK');
     } catch (error) {
