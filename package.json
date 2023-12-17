@@ -1,15 +1,55 @@
 {
-    "name": "rest_server",
-    "description": "REST Server",
-    "version": "1.0.0",
-    "author": {
-        "name": "Stephen Robert",
-        "email": "robe9898@stthomas.edu"
+  "name": "stpaul_crime",
+  "description": "RESTful Web Server and Single Page Application",
+  "version": "1.0.0",
+  "author": {
+    "name": "",
+    "email": ""
+},
+  "private": true,
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "core-js": "^3.8.3",
+    "leaflet": "^1.9.4",
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.1",
+    "vue2-leaflet": "^2.7.1",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
     },
-    "contributors": ["Henry Arlt", "Noah Kruse", "Stephen Robert"],
-    "repository": {},
-    "dependencies": {
-        "express": "^4.18.2",
-        "sqlite3": "^5.1.6"
-    }
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }
